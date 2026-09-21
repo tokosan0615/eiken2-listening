@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>英検2級 リスニング対策</title>
+<style>
+  :root {
+    --bg: #f7f5f2;
+    --card-bg: #ffffff;
+    --text: #1f2430;
+    --text-dim: #5a6270;
+    --accent: #2f6f4f;
+    --accent-dim: #e7f2ec;
+    --border: #e2ddd4;
+    --wrong: #b3462c;
+    --wrong-bg: #fbe9e4;
+    --correct-bg: #e5f3e8;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #191d24;
+      --card-bg: #232833;
+      --text: #eceef2;
+      --text-dim: #a3aab8;
+      --accent: #7fcb9f;
+      --accent-dim: #22362c;
+      --border: #333a47;
+      --wrong: #ff8a70;
+      --wrong-bg: #3a2420;
+      --correct-bg: #1f3428;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #191d24;
+    --card-bg: #232833;
+    --text: #eceef2;
+    --text-dim: #a3aab8;
+    --accent: #7fcb9f;
+    --accent-dim: #22362c;
+    --border: #333a47;
+    --wrong: #ff8a70;
+    --wrong-bg: #3a2420;
+    --correct-bg: #1f3428;
+  }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Hiragino Sans", "Yu Gothic", "Segoe UI", system-ui, sans-serif;
+    line-height: 1.7;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 28px 18px 60px; }
+  header { margin-bottom: 20px; }
+  h1 { font-size: 1.5rem; margin: 0 0 6px; }
+  .lead { color: var(--text-dim); font-size: 0.95rem; margin: 0 0 4px; }
+  .controls {
+    display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 12px; padding: 12px 14px; margin: 18px 0 26px;
+  }
+  .controls label { font-size: 0.88rem; color: var(--text-dim); }
+  select {
+    font-size: 0.88rem; padding: 5px 8px; border-radius: 8px;
+    border: 1px solid var(--border); background: var(--bg); color: var(--text);
+  }
+  .part-title {
+    font-size: 1.05rem; font-weight: 700; margin: 34px 0 4px;
+    color: var(--accent);
+  }
+  .part-desc { color: var(--text-dim); font-size: 0.87rem; margin-bottom: 14px; }
+  .card {
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 14px; padding: 18px 18px 16px; margin-bottom: 18px;
+  }
+  .q-num { font-weight: 700; font-size: 0.95rem; margin-bottom: 10px; }
+  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+  button.play {
+    background: var(--accent); color: #fff; border: none;
+    padding: 9px 16px; border-radius: 999px; font-size: 0.88rem;
+    cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+  }
+  button.play:active { opacity: 0.85; }
+  button.secondary {
+    background: transparent; color: var(--accent); border: 1px solid var(--accent);
+    padding: 8px 14px; border-radius: 999px; font-size: 0.85rem; cursor: pointer;
+  }
+  .script {
+    display: none; margin-top: 10px; padding: 12px 14px;
+    background: var(--accent-dim); border-radius: 10px; font-size: 0.88rem;
+    white-space: pre-line;
+  }
+  .script.show { display: block; }
+  .question-text { font-weight: 600; margin: 12px 0 8px; font-size: 0.95rem; }
+  .options { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+  .opt {
+    display: flex; gap: 8px; align-items: flex-start; padding: 9px 12px;
+    border: 1px solid var(--border); border-radius: 10px; cursor: pointer;
+    font-size: 0.92rem; transition: background 0.15s;
+  }
+  .opt:hover { background: var(--accent-dim); }
+  .opt.selected { border-color: var(--accent); background: var(--accent-dim); }
+  .opt input { margin-top: 3px; }
+  .check-btn {
+    background: var(--text); color: var(--bg); border: none; padding: 9px 18px;
+    border-radius: 999px; font-size: 0.88rem; cursor: pointer;
+  }
+  .result { display: none; margin-top: 12px; border-radius: 10px; padding: 12px 14px; font-size: 0.9rem; }
+  .result.show { display: block; }
+  .result.correct { background: var(--correct-bg); }
+  .result.incorrect { background: var(--wrong-bg); }
+  .result .verdict { font-weight: 700; margin-bottom: 4px; }
+  .result.correct .verdict { color: var(--accent); }
+  .result.incorrect .verdict { color: var(--wrong); }
+  .opt.mark-correct { border-color: var(--accent); background: var(--correct-bg); }
+  .opt.mark-wrong { border-color: var(--wrong); background: var(--wrong-bg); }
+  footer { text-align: center; color: var(--text-dim); font-size: 0.8rem; margin-top: 30px; }
+  .no-voice {
+    display: none; background: var(--wrong-bg); color: var(--wrong);
+    padding: 10px 14px; border-radius: 10px; font-size: 0.85rem; margin-bottom: 16px;
+  }
+  .no-voice.show { display: block; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>🎧 英検2級 リスニング対策</h1>
+    <p class="lead">全6問（Part1形式 × 2 ／ Part2形式 × 2 ／ Part3形式 × 2）。音声はこの端末の読み上げ機能で再生します。</p>
+    <p class="lead">使い方：①「音声を再生」を押して聞く → ②選択肢を選ぶ → ③「答え合わせ」を押す → ④解説を読む。台本は聞いた後に確認用としてどうぞ。</p>
+  </header>
+
+  <div class="no-voice" id="noVoiceMsg">
+    この端末では音声読み上げ（Web Speech API）が利用できないようです。「台本を表示」ボタンから英文を読んで学習してください。
+  </div>
+
+  <div class="controls">
+    <label for="rateSelect">読み上げ速度：</label>
+    <select id="rateSelect">
+      <option value="0.8">ゆっくり</option>
+      <option value="0.95" selected>標準（本番よりやや遅め）</option>
+      <option value="1.1">やや速い</option>
+    </select>
+  </div>
+
+  <div id="quizRoot"></div>
+
+  <footer>英検2級レベルの語彙・文法を目安にオリジナル作成した練習問題です。実際の試験とは形式・難易度が異なる場合があります。</footer>
+</div>
+
+<script>
+const questions = [
+  // ---------- Part 1 style: short exchange, choose the best response ----------
+  {
+    part: 1,
+    lines: [
+      {spk:"M", text:"Excuse me, is this seat taken?"},
+      {spk:"W", text:"No, go ahead. I'm just waiting for a friend to arrive."},
+      {spk:"M", text:"Thanks. Do you know if the next train to downtown comes soon?"}
+    ],
+    question: "Question: What will the woman probably say next?",
+    options: [
+      "A. I think it comes every ten minutes or so.",
+      "B. I've never been to downtown before.",
+      "C. Sorry, this seat is already taken.",
+      "D. My friend takes the bus to work."
+    ],
+    correct: 0,
+    explanation: "男性は「次の電車はすぐ来ますか」と尋ねています。自然な応答は電車の間隔について答えるAです。Bは話題がずれており、Cは直前の発言と矛盾（席は空いていると言った）、Dは質問への直接的な答えになっていません。"
+  },
+  {
+    part: 1,
+    lines: [
+      {spk:"W", text:"Hi, I ordered a medium pizza about 40 minutes ago, but it still hasn't arrived."},
+      {spk:"M", text:"I'm sorry about that. Let me check the order status for you."},
+      {spk:"W", text:"Thank you. I really need to leave for work soon."}
+    ],
+    question: "Question: What will the man probably say next?",
+    options: [
+      "A. We don't deliver pizza on weekends.",
+      "B. It looks like it's on its way and should arrive in five minutes.",
+      "C. Would you like to order a large pizza instead?",
+      "D. I'll have to close the store now."
+    ],
+    correct: 1,
+    explanation: "店員は注文状況を確認すると言っており、次に自然なのは状況を伝えるBです。Aは会話の流れと無関係、Cは既に注文済みなので不自然、Dは唐突で文脈に合いません。"
+  },
+
+  // ---------- Part 2 style: conversation followed by a question ----------
+  {
+    part: 2,
+    lines: [
+      {spk:"M", text:"Hey Sarah, are you still planning to join the hiking trip this weekend?"},
+      {spk:"W", text:"I'd love to, but I twisted my ankle last week, so I'm not sure I can walk that far yet."},
+      {spk:"M", text:"That's too bad. Maybe you could come along and just enjoy the scenery at the base of the trail instead?"},
+      {spk:"W", text:"That actually sounds nice. I'll bring a book and wait for you all there."}
+    ],
+    question: "Question: What does the woman decide to do?",
+    options: [
+      "A. Cancel her plans completely and stay home.",
+      "B. Hike the full trail despite her injury.",
+      "C. Go along but stay near the start of the trail.",
+      "D. Ask the man to postpone the trip."
+    ],
+    correct: 2,
+    explanation: "女性は最終的に「本を持って麓（base of the trail）で待つ」と言っているので、Cが正解です。Aは「行かない」という意味になり不正解、Bはケガのため不可能、Dはそのような発言はありません。"
+  },
+  {
+    part: 2,
+    lines: [
+      {spk:"W", text:"Tom, have you finished the report for tomorrow's meeting?"},
+      {spk:"M", text:"Almost. I just need to add the sales figures from last month, but I can't find the updated file."},
+      {spk:"W", text:"I sent it to you by email this morning. Check your inbox again."},
+      {spk:"M", text:"Oh, I see it now. Thanks, I should be done within the hour."}
+    ],
+    question: "Question: What was the man's problem?",
+    options: [
+      "A. He forgot about the meeting entirely.",
+      "B. He couldn't find a file he needed.",
+      "C. He disagreed with the sales figures.",
+      "D. He didn't know how to use email."
+    ],
+    correct: 1,
+    explanation: "男性は「更新されたファイルが見つからない」と言っているのでBが正解です。会議自体は覚えているのでAは誤り、数字への反論はしていないのでCも誤り、メールは使えているのでDも誤りです。"
+  },
+
+  // ---------- Part 3 style: narration + question ----------
+  {
+    part: 3,
+    lines: [
+      {spk:"N", text:"Many companies today allow employees to work from home a few days a week. While this gives workers more flexibility and saves commuting time, some managers worry that it makes teamwork more difficult. To solve this problem, a growing number of offices now require remote workers to attend at least one in-person meeting per week. This way, employees can still enjoy flexible schedules while staying connected with their team."}
+    ],
+    question: "Question: According to the passage, how are some offices addressing the problem of teamwork?",
+    options: [
+      "A. By banning remote work completely.",
+      "B. By requiring one in-person meeting each week.",
+      "C. By reducing employees' working hours.",
+      "D. By hiring more managers to supervise teams."
+    ],
+    correct: 1,
+    explanation: "本文後半で「週に最低1回は対面ミーティングに参加することを義務付ける」とあるのでBが正解です。在宅勤務を禁止しているわけではないのでAは誤り、労働時間や管理職を増やす話は出てきていないのでC・Dも誤りです。"
+  },
+  {
+    part: 3,
+    lines: [
+      {spk:"N", text:"Coral reefs are often called the rainforests of the sea because they support an enormous variety of marine life. However, rising ocean temperatures have caused many reefs to lose their color in a process known as coral bleaching. Scientists are now testing a new method of growing coral in labs and then transplanting it onto damaged reefs. Early results suggest that this technique could help some reefs recover within just a few years, although researchers admit it cannot solve the problem of rising temperatures itself."}
+    ],
+    question: "Question: What have scientists been testing recently?",
+    options: [
+      "A. A way to lower ocean temperatures directly.",
+      "B. A method of growing coral in labs and transplanting it.",
+      "C. A new type of fish that can survive in warmer water.",
+      "D. A chemical that prevents coral bleaching."
+    ],
+    correct: 1,
+    explanation: "本文に「研究室でサンゴを育て、傷んだ礁に移植する新しい方法を試している」とあるのでBが正解です。海水温を直接下げる方法ではない（Aは誤り）とはっきり述べられており、魚の話や化学薬品についての言及もありません。"
+  }
+];
+
+const root = document.getElementById('quizRoot');
+let currentPart = null;
+
+const partLabels = {
+  1: {title: "Part 1", desc: "短い会話を聞き、続く発言として最も自然なものを選びましょう。"},
+  2: {title: "Part 2", desc: "少し長めの会話を聞き、内容についての質問に答えましょう。"},
+  3: {title: "Part 3", desc: "ナレーション（説明文）を聞き、内容についての質問に答えましょう。"}
+};
+
+questions.forEach((q, qi) => {
+  if (q.part !== currentPart) {
+    currentPart = q.part;
+    const pt = document.createElement('div');
+    pt.className = 'part-title';
+    pt.textContent = partLabels[currentPart].title;
+    root.appendChild(pt);
+    const pd = document.createElement('div');
+    pd.className = 'part-desc';
+    pd.textContent = partLabels[currentPart].desc;
+    root.appendChild(pd);
+  }
+
+  const card = document.createElement('div');
+  card.className = 'card';
+
+  const num = document.createElement('div');
+  num.className = 'q-num';
+  num.textContent = `第${qi + 1}問`;
+  card.appendChild(num);
+
+  const btnRow = document.createElement('div');
+  btnRow.className = 'btn-row';
+
+  const playBtn = document.createElement('button');
+  playBtn.className = 'play';
+  playBtn.textContent = '▶ 音声を再生';
+  playBtn.onclick = () => playLines(q.lines, playBtn);
+  btnRow.appendChild(playBtn);
+
+  const scriptBtn = document.createElement('button');
+  scriptBtn.className = 'secondary';
+  scriptBtn.textContent = '台本を表示';
+  btnRow.appendChild(scriptBtn);
+  card.appendChild(btnRow);
+
+  const scriptDiv = document.createElement('div');
+  scriptDiv.className = 'script';
+  scriptDiv.textContent = q.lines.map(l => {
+    const label = l.spk === 'N' ? '' : (l.spk === 'M' ? 'Man: ' : 'Woman: ');
+    return label + l.text;
+  }).join('\n');
+  card.appendChild(scriptDiv);
+
+  scriptBtn.onclick = () => {
+    scriptDiv.classList.toggle('show');
+    scriptBtn.textContent = scriptDiv.classList.contains('show') ? '台本を隠す' : '台本を表示';
+  };
+
+  const qText = document.createElement('div');
+  qText.className = 'question-text';
+  qText.textContent = q.question;
+  card.appendChild(qText);
+
+  const optsDiv = document.createElement('div');
+  optsDiv.className = 'options';
+  let selectedIdx = null;
+  const optEls = [];
+
+  q.options.forEach((optText, oi) => {
+    const opt = document.createElement('label');
+    opt.className = 'opt';
+    const radio = document.createElement('input');
+    radio.type = 'radio';
+    radio.name = `q${qi}`;
+    radio.value = oi;
+    radio.onclick = () => {
+      selectedIdx = oi;
+      optEls.forEach(e => e.classList.remove('selected'));
+      opt.classList.add('selected');
+    };
+    opt.appendChild(radio);
+    const span = document.createElement('span');
+    span.textContent = optText;
+    opt.appendChild(span);
+    optsDiv.appendChild(opt);
+    optEls.push(opt);
+  });
+  card.appendChild(optsDiv);
+
+  const checkBtn = document.createElement('button');
+  checkBtn.className = 'check-btn';
+  checkBtn.textContent = '答え合わせ';
+  card.appendChild(checkBtn);
+
+  const resultDiv = document.createElement('div');
+  resultDiv.className = 'result';
+  card.appendChild(resultDiv);
+
+  checkBtn.onclick = () => {
+    if (selectedIdx === null) {
+      resultDiv.classList.add('show', 'incorrect');
+      resultDiv.classList.remove('correct');
+      resultDiv.innerHTML = '<div class="verdict">選択肢を選んでください。</div>';
+      return;
+    }
+    optEls.forEach((e, i) => {
+      e.classList.remove('mark-correct', 'mark-wrong');
+      if (i === q.correct) e.classList.add('mark-correct');
+      else if (i === selectedIdx) e.classList.add('mark-wrong');
+    });
+    const isCorrect = selectedIdx === q.correct;
+    resultDiv.classList.add('show');
+    resultDiv.classList.toggle('correct', isCorrect);
+    resultDiv.classList.toggle('incorrect', !isCorrect);
+    resultDiv.innerHTML = `<div class="verdict">${isCorrect ? '正解です！' : '不正解です。正解は ' + String.fromCharCode(65 + q.correct) + ' です。'}</div><div>${q.explanation}</div>`;
+  };
+
+  root.appendChild(card);
+});
+
+// --- Speech synthesis playback ---
+let voices = [];
+function loadVoices() {
+  voices = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+}
+if (window.speechSynthesis) {
+  loadVoices();
+  window.speechSynthesis.onvoiceschanged = loadVoices;
+} else {
+  document.getElementById('noVoiceMsg').classList.add('show');
+}
+
+function pickVoice(spk) {
+  const enVoices = voices.filter(v => v.lang && v.lang.toLowerCase().startsWith('en'));
+  if (enVoices.length === 0) return null;
+  const male = enVoices.find(v => /male/i.test(v.name) && !/female/i.test(v.name));
+  const female = enVoices.find(v => /female/i.test(v.name));
+  if (spk === 'M' && male) return male;
+  if (spk === 'W' && female) return female;
+  return enVoices[0];
+}
+
+function playLines(lines, btn) {
+  if (!window.speechSynthesis) {
+    document.getElementById('noVoiceMsg').classList.add('show');
+    return;
+  }
+  window.speechSynthesis.cancel();
+  const rate = parseFloat(document.getElementById('rateSelect').value);
+  const origText = btn.textContent;
+  btn.textContent = '再生中…';
+  btn.disabled = true;
+
+  let i = 0;
+  function speakNext() {
+    if (i >= lines.length) {
+      btn.textContent = origText;
+      btn.disabled = false;
+      return;
+    }
+    const line = lines[i];
+    const utter = new SpeechSynthesisUtterance(line.text);
+    utter.lang = 'en-US';
+    utter.rate = rate;
+    const v = pickVoice(line.spk);
+    if (v) utter.voice = v;
+    utter.onend = () => { i++; setTimeout(speakNext, 350); };
+    utter.onerror = () => { i++; setTimeout(speakNext, 350); };
+    window.speechSynthesis.speak(utter);
+  }
+  speakNext();
+}
+</script>
+</body>
+</html>
