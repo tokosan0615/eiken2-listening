@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>英検2級 リスニング対策（第2部：文の内容一致選択）</title>
+    
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --border-color: #e5e7eb;
+            --success: #10b981;
+            --danger: #ef4444;
+            --accent-bg: #e0e7ff;
+        }
+
+        body {
+            font-family: 'Inter', "Hiragino Kaku Gothic ProN", "Meiryo", -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 768px;
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .progress-badge {
+            background-color: var(--accent-bg);
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.875rem;
+            padding: 4px 12px;
+            border-radius: 9999px;
+        }
+
+        .content {
+            padding: 24px;
+        }
+
+        .audio-controls {
+            background-color: #f9fafb;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .status-text {
+            display: block;
+            margin-top: 12px;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+        }
+
+        .option-item:hover:not(.disabled) {
+            border-color: #a5b4fc;
+            background-color: #f5f6ff;
+        }
+
+        .option-item.selected {
+            border-color: var(--primary);
+            background-color: var(--accent-bg);
+        }
+
+        .option-item input[type="radio"] {
+            margin-right: 16px;
+            transform: scale(1.2);
+            cursor: pointer;
+        }
+
+        .option-item.disabled {
+            cursor: default;
+            opacity: 0.7;
+        }
+
+        .error-message {
+            color: var(--danger);
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-top: -12px;
+            margin-bottom: 16px;
+            display: none;
+        }
+
+        .btn-full {
+            width: 100%;
+            background-color: var(--text-main);
+            color: white;
+        }
+
+        .btn-full:hover {
+            background-color: #111827;
+        }
+
+        .btn-next {
+            width: 100%;
+            background-color: var(--success);
+            color: white;
+            display: none;
+            margin-top: 24px;
+        }
+
+        .btn-next:hover {
+            background-color: #059669;
+        }
+
+        .explanation-container {
+            display: none;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 2px dashed var(--border-color);
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            font-size: 1.125rem;
+            font-weight: 700;
+            border-radius: 8px;
+            color: white;
+            margin-bottom: 16px;
+        }
+
+        .result-badge.correct { background-color: var(--success); }
+        .result-badge.incorrect { background-color: var(--danger); }
+
+        .result-summary {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        .script-section {
+            background-color: #f8fafc;
+            border-left: 4px solid var(--primary);
+            padding: 16px;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 20px;
+        }
+
+        .script-section h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-top: 0;
+            margin-bottom: 12px;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 8px;
+        }
+
+        .script-content {
+            font-size: 0.95rem;
+            color: var(--text-main);
+            margin-bottom: 12px;
+        }
+        
+        .script-content.ja-text {
+            color: #475569;
+            margin-bottom: 0;
+            padding-top: 8px;
+            border-top: 1px dashed #cbd5e1;
+            margin-top: 12px;
+        }
+
+        .options-explanation-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 12px 0;
+        }
+        .options-explanation-list li {
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+        .options-explanation-list li span.ja-opt {
+            color: #475569;
+            font-size: 0.9rem;
+            margin-left: 8px;
+        }
+        
+        .explanation-text {
+            font-weight: 600;
+            color: var(--primary-hover);
+        }
+
+        #resultScreen {
+            display: none;
+            text-align: center;
+            padding: 48px 24px;
+        }
+
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background-color: var(--accent-bg);
+            border: 4px solid var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px auto;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div id="quizScreen">
+            <div class="header">
+                <h1>英検2級 リスニング 第2部</h1>
+                <div class="progress-badge" id="progressText">第 1 問 / 10</div>
+            </div>
+
+            <div class="content">
+                <div class="audio-controls">
+                    <button id="playBtn" class="btn btn-primary" onclick="playAudio()">
+                        <svg style="width: 20px; height: 20px; margin-right: 8px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        音声を再生する
+                    </button>
+                    <span id="audioStatus" class="status-text">再生ボタンを押すと英文と質問が流れます。</span>
+                </div>
+
+                <div class="options-list" id="optionsContainer">
+                    <!-- Options injected via JS -->
+                </div>
+                
+                <div id="errorMsg" class="error-message">※選択肢を1つ選んでください。</div>
+                
+                <button id="submitBtn" class="btn btn-full" onclick="checkAnswer()">解答を確認する</button>
+
+                <!-- Explanation Area -->
+                <div id="explanationContainer" class="explanation-container">
+                    <div id="resultBadge" class="result-badge"></div>
+                    <div id="resultSummary" class="result-summary"></div>
+
+                    <div class="script-section">
+                        <h3>【英文スクリプト / 和訳】</h3>
+                        <div class="script-content" id="passageEn"></div>
+                        <div class="script-content ja-text" id="passageJa"></div>
+                    </div>
+
+                    <div class="script-section">
+                        <h3>【質問 / 和訳】</h3>
+                        <div class="script-content" id="questionEn" style="font-weight: 600;"></div>
+                        <div class="script-content ja-text" id="questionJa"></div>
+                    </div>
+                    
+                    <div class="script-section">
+                        <h3>【選択肢の和訳】</h3>
+                        <ul class="options-explanation-list" id="optionsExplanation"></ul>
+                    </div>
+
+                    <div class="script-section" style="border-color: var(--success);">
+                        <h3>【解説】</h3>
+                        <div class="script-content explanation-text" id="explanationText"></div>
+                    </div>
+
+                    <button id="nextBtn" class="btn btn-next" onclick="nextQuestion()">次の問題へ進む</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="resultScreen">
+            <h1 style="font-size: 2rem; margin-bottom: 8px;">演習完了！</h1>
+            <p style="color: var(--text-muted); margin-bottom: 32px;">第2部（文の内容一致選択）の最終スコアです。</p>
+            
+            <div class="score-circle">
+                <span id="finalScore">0</span><span style="font-size: 1.25rem; color: var(--text-muted);">/10</span>
+            </div>
+            
+            <button class="btn btn-primary" onclick="location.reload()" style="padding: 16px 32px; font-size: 1.1rem;">もう一度挑戦する</button>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                gender: "female",
+                passage: "Welcome aboard flight 722 to New York. We are currently third in line for takeoff and expect to be in the air in approximately ten minutes. We ask that you make sure your seatbelts are securely fastened and your tray tables are in the upright position.",
+                question: "What are the passengers asked to do?",
+                options: ["Turn off their computers.", "Fasten their seatbelts.", "Buy some drinks.", "Wait for an hour."],
+                options_ja: ["コンピュータの電源を切る。", "シートベルトを締める。", "飲み物を買う。", "1時間待つ。"],
+                correct: 1,
+                passage_ja: "ニューヨーク行き722便にご搭乗ありがとうございます。現在、離陸の順番待ちの3番目で、約10分後には上空にいる予定です。シートベルトがしっかりと締められ、テーブルが元の位置に戻っていることをご確認ください。",
+                question_ja: "乗客は何をするよう求められていますか？",
+                explanation: "正解は2。シートベルトを締めるように(make sure your seatbelts are securely fastened)アナウンスされています。"
+            },
+            {
+                gender: "male",
+                passage: "Alexander Fleming was a Scottish scientist. In 1928, he accidentally discovered penicillin, the world's first antibiotic. Before this discovery, many people died from simple infections. His discovery revolutionized medicine and saved millions of lives around the world.",
+                question: "What is one thing we learn about Alexander Fleming?",
+                options: ["He was a famous doctor in America.", "He discovered penicillin by accident.", "He invented a new type of infection.", "He refused to accept a prize."],
+                options_ja: ["彼はアメリカで有名な医師だった。", "彼は偶然ペニシリンを発見した。", "彼は新しい種類の感染症を発明した。", "彼は賞の受け取りを拒否した。"],
+                correct: 1,
+                passage_ja: "アレクサンダー・フレミングはスコットランドの科学者です。1928年、彼は世界初の抗生物質であるペニシリンを偶然発見しました。この発見以前は、多くの人が単純な感染症で命を落としていました。彼の発見は医学に革命をもたらし、世界中で何百万人もの命を救いました。",
+                question_ja: "アレクサンダー・フレミングについてわかることは何ですか？",
+                explanation: "正解は2。1928年に偶然ペニシリンを発見した(accidentally discovered penicillin)と述べられています。"
+            },
+            {
+                gender: "female",
+                passage: "Robert usually takes the train to his office in the city center. However, today there was a heavy snowstorm, and all train services were canceled. He had an important meeting with a client at 10 a.m. So, he decided to have the meeting online from his house instead of rescheduling it.",
+                question: "Why did Robert have the meeting online?",
+                options: ["Because he lost his train ticket.", "Because he woke up late.", "Because the trains were not running.", "Because his client asked him to do so."],
+                options_ja: ["電車の切符をなくしたから。", "寝坊したから。", "電車が動いていなかったから。", "顧客からそう頼まれたから。"],
+                correct: 2,
+                passage_ja: "ロバートは普段、都心のオフィスまで電車で通っています。しかし今日は激しい吹雪で、電車の運行がすべてキャンセルされました。彼は午前10時に顧客との重要な会議がありました。そこで、予定を変更する代わりに、自宅からオンラインで会議を行うことにしました。",
+                question_ja: "なぜロバートはオンラインで会議を行いましたか？",
+                explanation: "正解は3。吹雪で電車が運休したため(all train services were canceled)です。"
+            },
+            {
+                gender: "male",
+                passage: "Lisa is looking for a birthday present for her younger brother. He loves reading fantasy novels, but Lisa doesn't know which books he has already read. So, instead of buying a book, she decided to get him a gift card for a local bookstore. That way, he can choose whatever he likes.",
+                question: "What will Lisa probably buy for her brother?",
+                options: ["A fantasy novel.", "A bookcase.", "A gift card.", "A new e-reader."],
+                options_ja: ["ファンタジー小説。", "本棚。", "ギフトカード。", "新しい電子書籍リーダー。"],
+                correct: 2,
+                passage_ja: "リサは弟への誕生日プレゼントを探しています。弟はファンタジー小説を読むのが大好きですが、リサは弟がどの本をすでに読んだか知りません。そこで本を買う代わりに、地元の書店のギフトカードを贈ることにしました。そうすれば、彼は好きなものを選ぶことができます。",
+                question_ja: "リサはおそらく弟に何を買いますか？",
+                explanation: "正解は3。どの本を読んだか分からないため、代わりにギフトカード(a gift card)を買うことにしました。"
+            },
+            {
+                gender: "female",
+                passage: "Sea turtles are marine animals that have existed for millions of years. Female turtles return to the same beach where they were born to lay their eggs. However, these beautiful creatures are facing many dangers today, such as plastic pollution in the oceans and the loss of nesting beaches.",
+                question: "What is one problem that sea turtles are facing today?",
+                options: ["They cannot find enough food.", "The oceans are polluted with plastic.", "They are hunted by other animals.", "They forget where they were born."],
+                options_ja: ["十分な食べ物を見つけられない。", "海がプラスチックで汚染されている。", "他の動物に狩られる。", "生まれた場所を忘れてしまう。"],
+                correct: 1,
+                passage_ja: "ウミガメは何百万年も前から存在する海洋動物です。メスのカメは卵を産むために、自分が生まれたのと同じ浜辺に戻ってきます。しかし、今日これらの美しい生き物は、海中のプラスチック汚染や産卵用の浜辺の喪失など、多くの危険に直面しています。",
+                question_ja: "今日、ウミガメが直面している問題の一つは何ですか？",
+                explanation: "正解は2。プラスチック汚染(plastic pollution in the oceans)などの危険に直面していると述べられています。"
+            },
+            {
+                gender: "male",
+                passage: "Next month, the students at Westville High School will hold a cultural festival. Usually, each class opens a small cafe or a game booth. But this year, class 2-B has decided to perform a musical based on a popular movie. They are practicing very hard every day after school.",
+                question: "What is class 2-B planning to do for the festival?",
+                options: ["Open a small cafe.", "Run a game booth.", "Show a popular movie.", "Perform a musical."],
+                options_ja: ["小さなカフェを開く。", "ゲームブースを運営する。", "人気の映画を上映する。", "ミュージカルを上演する。"],
+                correct: 3,
+                passage_ja: "来月、ウェストビル高校の生徒たちは文化祭を開催します。通常、各クラスは小さなカフェやゲームブースを開きます。しかし今年、2年B組は人気映画を基にしたミュージカルを上演することに決めました。彼らは毎日放課後に一生懸命練習しています。",
+                question_ja: "2年B組は文化祭で何をする予定ですか？",
+                explanation: "正解は4。2年B組は人気映画を基にしたミュージカルを上演する(perform a musical)予定です。"
+            },
+            {
+                gender: "female",
+                passage: "The town library is going to hold a special event this Saturday. A famous children's book author, Mary Johnson, will visit the library to read her new book. After the reading, there will be a chance for children to ask her questions and get her autograph. The event is free, but people need to register online in advance.",
+                question: "What do people need to do to attend the event?",
+                options: ["Buy the author's new book.", "Register on the internet.", "Pay an entrance fee.", "Bring their own books."],
+                options_ja: ["著者の新しい本を買う。", "インターネットで登録する。", "入場料を払う。", "自分の本を持参する。"],
+                correct: 1,
+                passage_ja: "町の図書館では今週の土曜日に特別なイベントを開催します。有名な児童文学作家のメアリー・ジョンソンさんが図書館を訪れ、新作を朗読します。朗読の後には、子どもたちが彼女に質問したりサインをもらったりする機会があります。イベントは無料ですが、事前にオンラインで登録する必要があります。",
+                question_ja: "イベントに参加するには何をする必要がありますか？",
+                explanation: "正解は2。無料で参加できますが、事前のオンライン登録(register online in advance)が必要です。"
+            },
+            {
+                gender: "male",
+                passage: "Greg started learning how to play the guitar last year. At first, he took lessons at a music school, but he found it too expensive. Now, he learns by watching tutorial videos on the internet. He practices for an hour every evening, and he can finally play some of his favorite rock songs.",
+                question: "How does Greg currently learn to play the guitar?",
+                options: ["By going to a music school.", "By reading music books.", "By watching online videos.", "By playing in a rock band."],
+                options_ja: ["音楽学校に通って。", "音楽の本を読んで。", "オンライン動画を見て。", "ロックバンドで演奏して。"],
+                correct: 2,
+                passage_ja: "グレッグは昨年からギターの弾き方を習い始めました。最初は音楽学校でレッスンを受けていましたが、費用が高すぎると感じました。現在、彼はインターネットの解説動画を見て学んでいます。毎晩1時間練習し、ついに彼のお気に入りのロックの曲をいくつか弾けるようになりました。",
+                question_ja: "グレッグは現在、どのようにギターを学んでいますか？",
+                explanation: "正解は3。現在はインターネットの動画を見て学んでいる(learns by watching tutorial videos on the internet)と説明されています。"
+            },
+            {
+                gender: "female",
+                passage: "Green Tech is a company that makes environmentally friendly cleaning products. Last year, they moved their main office from a small town to a big city to attract more talented workers. Since the move, the company's sales have increased by 20 percent, and they plan to hire 50 new employees next spring.",
+                question: "Why did Green Tech move their main office?",
+                options: ["To sell more products.", "To reduce their taxes.", "To find better workers.", "To build a larger factory."],
+                options_ja: ["より多くの製品を売るため。", "税金を減らすため。", "より優秀な労働者を見つけるため。", "より大きな工場を建設するため。"],
+                correct: 2,
+                passage_ja: "グリーンテックは環境に優しい掃除用品を製造する会社です。昨年、より優秀な働き手を惹きつけるため、本社を小さな町から大都市へ移転しました。移転以来、会社の売上は20パーセント増加し、来春には50人の新入社員を雇う予定です。",
+                question_ja: "グリーンテックはなぜ本社を移転したのですか？",
+                explanation: "正解は3。より優秀な労働者を集めるため(to attract more talented workers)に移転しました。"
+            },
+            {
+                gender: "male",
+                passage: "Many doctors say that eating too much sugar is bad for our health. It can lead to weight gain and other serious problems. Therefore, the government is planning to introduce a new tax on sugary drinks next year. They hope this will encourage people to choose healthier drinks, like water or green tea.",
+                question: "What is the government planning to do next year?",
+                options: ["Provide free water to everyone.", "Ban the sale of sweet foods.", "Put a tax on sugary drinks.", "Open new health clinics."],
+                options_ja: ["すべての人に無料の水を提供する。", "甘い食べ物の販売を禁止する。", "加糖飲料に税金をかける。", "新しい健康クリニックを開設する。"],
+                correct: 2,
+                passage_ja: "多くの医師は、砂糖の摂りすぎは健康に悪いと言っています。体重増加やその他の深刻な問題を引き起こす可能性があります。そのため、政府は来年、加糖飲料に新たな税金を導入する予定です。これにより、人々が水や緑茶などのより健康的な飲み物を選ぶようになることを期待しています。",
+                question_ja: "政府は来年何をする予定ですか？",
+                explanation: "正解は3。加糖飲料に新たな税金を導入する(introduce a new tax on sugary drinks)計画です。"
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let isPlaying = false;
+        let audioTimeout = null;
+        let availableVoices = [];
+
+        function populateVoiceList() {
+            if (typeof speechSynthesis === 'undefined') return;
+            availableVoices = speechSynthesis.getVoices().filter(voice => voice.lang.startsWith('en'));
+        }
+
+        if (typeof speechSynthesis !== 'undefined') {
+            speechSynthesis.onvoiceschanged = populateVoiceList;
+            populateVoiceList();
+        }
+
+        function getVoiceForGender(gender) {
+            if (availableVoices.length === 0) return null;
+            
+            const femaleKeywords = ['female', 'zira', 'samantha', 'victoria', 'susan', 'karen'];
+            const maleKeywords = ['male', 'david', 'alex', 'george', 'mark', 'daniel'];
+            
+            const keywords = gender === 'female' ? femaleKeywords : maleKeywords;
+            
+            for (let voice of availableVoices) {
+                if (keywords.some(keyword => voice.name.toLowerCase().includes(keyword))) {
+                    return voice;
+                }
+            }
+            return availableVoices[0];
+        }
+
+        function initQuestion() {
+            const q = quizData[currentQuestionIndex];
+            document.getElementById('progressText').textContent = `第 ${currentQuestionIndex + 1} 問 / ${quizData.length}`;
+            
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+            
+            q.options.forEach((opt, idx) => {
+                const label = document.createElement('label');
+                label.className = 'option-item';
+                label.onclick = () => selectOption(label);
+                
+                const input = document.createElement('input');
+                input.type = 'radio';
+                input.name = 'quiz-option';
+                input.value = idx;
+                
+                const span = document.createElement('span');
+                span.textContent = `${idx + 1}. ${opt}`;
+                
+                label.appendChild(input);
+                label.appendChild(span);
+                optionsContainer.appendChild(label);
+            });
+
+            // Reset UI states
+            document.getElementById('explanationContainer').style.display = 'none';
+            document.getElementById('submitBtn').style.display = 'block';
+            document.getElementById('nextBtn').style.display = 'none';
+            document.getElementById('errorMsg').style.display = 'none';
+            
+            const playBtn = document.getElementById('playBtn');
+            playBtn.disabled = false;
+            playBtn.innerHTML = `<svg style="width: 20px; height: 20px; margin-right: 8px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> 音声を再生する`;
+            document.getElementById('audioStatus').textContent = "再生ボタンを押すと英文と質問が流れます。";
+            
+            // Populate Explanation Data
+            document.getElementById('passageEn').textContent = q.passage;
+            document.getElementById('passageJa').textContent = q.passage_ja;
+            document.getElementById('questionEn').textContent = `Question: ${q.question}`;
+            document.getElementById('questionJa').textContent = `質問: ${q.question_ja}`;
+            document.getElementById('explanationText').textContent = q.explanation;
+            
+            // Populate Options Explanation
+            const optsExplanationList = document.getElementById('optionsExplanation');
+            optsExplanationList.innerHTML = '';
+            q.options.forEach((opt, idx) => {
+                const li = document.createElement('li');
+                li.innerHTML = `<strong>${idx + 1}.</strong> ${opt} <br><span class="ja-opt">${q.options_ja[idx]}</span>`;
+                optsExplanationList.appendChild(li);
+            });
+        }
+
+        function selectOption(selectedLabel) {
+            if (document.getElementById('submitBtn').style.display === 'none') return;
+            
+            document.querySelectorAll('.option-item').forEach(lbl => lbl.classList.remove('selected'));
+            selectedLabel.classList.add('selected');
+            selectedLabel.querySelector('input').checked = true;
+            document.getElementById('errorMsg').style.display = 'none';
+        }
+
+        function playAudio() {
+            if (!('speechSynthesis' in window)) {
+                showMessage("お使いのブラウザは音声合成に対応していません。");
+                return;
+            }
+
+            window.speechSynthesis.cancel();
+            clearTimeout(audioTimeout);
+            isPlaying = true;
+            
+            const playBtn = document.getElementById('playBtn');
+            const status = document.getElementById('audioStatus');
+            const q = quizData[currentQuestionIndex];
+            
+            playBtn.disabled = true;
+            playBtn.innerHTML = `再生中...`;
+            status.textContent = "英文を再生中...";
+
+            const passageUtterance = new SpeechSynthesisUtterance(q.passage);
+            passageUtterance.lang = 'en-US';
+            passageUtterance.rate = 0.95;
+            
+            const selectedVoice = getVoiceForGender(q.gender);
+            if (selectedVoice) passageUtterance.voice = selectedVoice;
+            passageUtterance.pitch = q.gender === 'female' ? 1.2 : 0.8;
+
+            const questionUtterance = new SpeechSynthesisUtterance("Question. " + q.question);
+            questionUtterance.lang = 'en-US';
+            questionUtterance.rate = 0.95;
+            if (selectedVoice) questionUtterance.voice = selectedVoice;
+            questionUtterance.pitch = q.gender === 'female' ? 1.2 : 0.8;
+
+            passageUtterance.onend = () => {
+                if (!isPlaying) return;
+                status.textContent = "質問の前に間を空けています...";
+                
+                // 1秒間のポーズ
+                audioTimeout = setTimeout(() => {
+                    if (!isPlaying) return;
+                    status.textContent = "質問を再生中...";
+                    window.speechSynthesis.speak(questionUtterance);
+                }, 1000);
+            };
+
+            questionUtterance.onend = () => {
+                playBtn.disabled = false;
+                playBtn.innerHTML = `<svg style="width: 20px; height: 20px; margin-right: 8px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg> 音声をもう一度再生する`;
+                status.textContent = "音声の再生が終了しました。";
+                isPlaying = false;
+            };
+
+            passageUtterance.onerror = (e) => {
+                playBtn.disabled = false;
+                status.textContent = "再生エラーが発生しました。";
+                isPlaying = false;
+            };
+
+            window.speechSynthesis.speak(passageUtterance);
+        }
+
+        function checkAnswer() {
+            const selectedRadio = document.querySelector('input[name="quiz-option"]:checked');
+            if (!selectedRadio) {
+                document.getElementById('errorMsg').style.display = 'block';
+                return;
+            }
+
+            window.speechSynthesis.cancel();
+            clearTimeout(audioTimeout);
+            isPlaying = false;
+
+            const selectedIndex = parseInt(selectedRadio.value);
+            const q = quizData[currentQuestionIndex];
+            
+            const badge = document.getElementById('resultBadge');
+            const summary = document.getElementById('resultSummary');
+
+            if (selectedIndex === q.correct) {
+                badge.className = "result-badge correct";
+                badge.textContent = "正解！";
+                summary.textContent = `素晴らしい！正解は ${selectedIndex + 1}番 です。`;
+                summary.style.color = "var(--success)";
+                score++;
+            } else {
+                badge.className = "result-badge incorrect";
+                badge.textContent = "不正解";
+                summary.textContent = `あなたの選択: ${selectedIndex + 1}番（正解は ${q.correct + 1}番 です）`;
+                summary.style.color = "var(--danger)";
+            }
+
+            document.querySelectorAll('input[name="quiz-option"]').forEach(radio => radio.disabled = true);
+            document.querySelectorAll('.option-item').forEach(lbl => {
+                lbl.classList.add('disabled');
+                if (parseInt(lbl.querySelector('input').value) === q.correct) {
+                    lbl.style.borderColor = "var(--success)";
+                    lbl.style.backgroundColor = "#ecfdf5";
+                }
+            });
+
+            document.getElementById('submitBtn').style.display = 'none';
+            document.getElementById('explanationContainer').style.display = 'block';
+            
+            const nextBtn = document.getElementById('nextBtn');
+            nextBtn.style.display = 'block';
+            if (currentQuestionIndex === quizData.length - 1) {
+                nextBtn.textContent = "結果を見る";
+            }
+
+            setTimeout(() => {
+                document.getElementById('explanationContainer').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        }
+
+        function nextQuestion() {
+            window.speechSynthesis.cancel();
+            clearTimeout(audioTimeout);
+            isPlaying = false;
+
+            if (currentQuestionIndex < quizData.length - 1) {
+                currentQuestionIndex++;
+                initQuestion();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                document.getElementById('quizScreen').style.display = 'none';
+                document.getElementById('resultScreen').style.display = 'block';
+                document.getElementById('finalScore').textContent = score;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function showMessage(msg) {
+            const errorElement = document.getElementById('errorMsg');
+            errorElement.textContent = msg;
+            errorElement.style.display = 'block';
+        }
+
+        window.onload = () => {
+            initQuestion();
+        };
+    </script>
+</body>
+</html>
